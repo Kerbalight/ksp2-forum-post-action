@@ -41,11 +41,11 @@ echo "## Release v${INPUT_VERSION}" > ./message.md
 cat "$changelog_file" >> ./message.md
 
 if [ -n "$INPUT_SPACEDOCK_URL" ]; then
-    echo "[Download on SpaceDock](${INPUT_SPACEDOCK_URL})" >> ./message.md
+    echo -e "\n\n[Download on SpaceDock](${INPUT_SPACEDOCK_URL})" >> ./message.md
 fi
 
 if [ -n "$INPUT_POST_FOOTER" ]; then
-  echo "$INPUT_POST_FOOTER" >> ./message.md
+  echo -e "\n\n$INPUT_POST_FOOTER" >> ./message.md
 fi
 
 pandoc -f markdown -t html './message.md' > message.html
