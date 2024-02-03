@@ -65,14 +65,14 @@ maxfilesize_input=$(echo "$latest_page_response" | pup 'div[data-role="replyArea
 echo $'\nUpdate title..'
 new_title=$(echo "$INPUT_TOPIC_TITLE" | sed -e "s/{version}/${INPUT_VERSION}/" | sed -e "s/{ksp2_version}/${INPUT_KSP2_VERSION}/")
 echo "New title: $new_title"
-curl -X POST -L \
+title_response=$(curl -X POST -L \
 --data-urlencode "newTitle=${new_title}" \
 --data-urlencode "csrfKey=${csrf_token}" \
 --data-urlencode "do=ajaxEditTitle" \
--A "$user_agent" -b ./cookies -c ./cookies "${forum_topic_url}"
+-A "$user_agent" -b ./cookies -c ./cookies "${forum_topic_url}")
 
 echo $'\nReply..' 
-curl -X POST -L \
+reply_response=(curl -X POST -L \
 -F _contentReply=1 \
 -F MAX_FILE_SIZE=${maxfilesize_input} \
 -F plupload=${plupload_input} \
@@ -81,7 +81,7 @@ curl -X POST -L \
 -F commentform_${forum_topic_id}_submitted=1 \
 -F "topic_comment_${forum_topic_id}=" \
 -F "topic_comment_${forum_topic_id}_noscript=<messagestripped.html" \
--A "$user_agent" -b ./cookies -c ./cookies "$forum_topic_url"
+-A "$user_agent" -b ./cookies -c ./cookies "$forum_topic_url")
 
 rm ./cookies
 
