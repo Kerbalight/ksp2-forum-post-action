@@ -48,7 +48,7 @@ if [ -n "$INPUT_POST_FOOTER" ]; then
   echo -e "\n\n$INPUT_POST_FOOTER" >> ./message.md
 fi
 
-pandoc -f markdown -t html './message.md' > message.html
+pandoc -f gfm -t html './message.md' > message.html
 tr -d '\n' < message.html > messagestripped.html # \r\n on Windows
 
 echo $'\nMessage prepared, markdown:'
