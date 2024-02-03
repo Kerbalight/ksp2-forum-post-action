@@ -9,6 +9,10 @@ inputs:
     description: "The KSP2 Forum password to upload with"
     required: true
     default: ""
+  swinfo_path:
+    description: "The path to the swinfo.json file"
+    required: true
+    default: "plugin_template/swinfo.json"
   forum_topic_url:
     description: "The URL of the forum topic to post in"
     required: true
@@ -57,7 +61,7 @@ runs:
     - name: Read KSP2 Version
       shell: bash
       run: |
-        ksp2_version=$(jq -r '.ksp2_version.min' plugin_template/swinfo.json)
+        ksp2_version=$(jq -r '.ksp2_version.min' ${{ inputs.swinfo_path }})
         echo "KSP2 Version: $ksp2_version"
         echo "ksp2_version=$ksp2_version" >> $GITHUB_ENV
 
@@ -74,3 +78,4 @@ runs:
         INPUT_CHANGELOG: ${{ inputs.changelog }}
         INPUT_VERSION: ${{ inputs.version }}
         INPUT_KSP2_VERSION: ${{ env.ksp2_version }}
+        INPUT_SWINFO_PATH: ${{ inputs.swinfo_path }}
