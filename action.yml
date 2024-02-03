@@ -1,0 +1,65 @@
+name: 'KSP2 Forum Post Mod Update'
+description: 'Updates mod on KSP2 Forum topic, requires a KSP2 Forum account'
+inputs:
+  username:
+    description: "The KSP2 Forum username to post with"
+    required: true
+    default: ""
+  password:
+    description: "The KSP2 Forum password to upload with"
+    required: true
+    default: ""
+  forum_topic_url:
+    description: "The URL of the forum topic to post in"
+    required: true
+    default: ""
+  forum_topic_title:
+    description: "The title of the forum topic to post in. Use {version} placeholder to insert the version number"
+    required: true
+    default: ""
+  spacedock_url:
+    description: "The Mod URL on spacedock. If provided, a link to the mod will be included in the post"
+    required: false
+    default: ""
+  post_footer:
+    description: "The fixed markdown footer to add to the post"
+    required: false
+    default: ""
+  version:
+    description: "The version of the mod"
+    required: true
+    default: ""
+  changelog:
+    description: "The filename of your changelog"
+    required: true
+    default: ""
+  update_title:
+    description: "The title of the update post"
+    required: false
+    default: ""
+branding:
+  icon: 'upload'
+  color: 'green'
+runs:
+  using: "composite"
+  steps:  
+    - name: Add mask (again to be sure)
+      run: echo "::add-mask::${{ inputs.password }}"
+      shell: bash
+    - name: Install and cache dependencies
+      uses: awalsh128/cache-apt-pkgs-action@latest
+      with:
+        packages: pup jq pandoc
+        version: 1.0
+    - name: Post mod update
+      run:  ${{ github.action_path }}/post_mod_update.sh 
+      shell: bash
+      env:
+        INPUT_USERNAME: ${{ inputs.username }}
+        INPUT_PASSWORD: ${{ inputs.password }}
+        INPUT_FORUM_TOPIC_URL: ${{ inputs.forum_topic_url }}
+        INPUT_SPACEDOCK_URL: ${{ inputs.spacedock_url }}
+        INPUT_TOPIC_TITLE: ${{ inputs.forum_topic_title }}
+        INPUT_POST_FOOTER: ${{ inputs.post_footer }}
+        INPUT_CHANGELOG: ${{ inputs.changelog }}
+        INPUT_VERSION: ${{ inputs.version }}
