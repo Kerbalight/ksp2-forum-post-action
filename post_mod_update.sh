@@ -63,7 +63,7 @@ plupload_input=$(echo $latest_page_response | pup 'div[data-role="replyArea"] in
 maxfilesize_input=$(echo $latest_page_response | pup 'div[data-role="replyArea"] input[name="MAX_FILE_SIZE"] attr{value}')
 
 echo $'\nUpdate title..'
-new_title=$(echo "$INPUT_TOPIC_TITLE" | sed -e "s/{version}/${INPUT_VERSION}/")
+new_title=$(echo "$INPUT_TOPIC_TITLE" | sed -e "s/{version}/${INPUT_VERSION}/" | sed -e "s/{ksp2_version}/${INPUT_KSP2_VERSION}/")
 echo "New title: $new_title"
 title_response=$(curl -X POST -L \
 --data-urlencode "newTitle=${new_title}" \

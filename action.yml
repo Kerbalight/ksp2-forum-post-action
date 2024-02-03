@@ -33,10 +33,6 @@ inputs:
     description: "The filename of your changelog"
     required: true
     default: ""
-  update_title:
-    description: "The title of the update post"
-    required: false
-    default: ""
 branding:
   icon: 'upload'
   color: 'green'
@@ -46,11 +42,20 @@ runs:
     - name: Add mask (again to be sure)
       run: echo "::add-mask::${{ inputs.password }}"
       shell: bash
+      
     - name: Install and cache dependencies
       uses: awalsh128/cache-apt-pkgs-action@latest
       with:
         packages: pup jq pandoc
         version: 1.0
+
+    - name: Read KSP2 Version
+      shell: bash
+      run: |
+        ksp2_version=$(jq -r '.ksp2_version.min' plugin_template/swinfo.json)
+        echo "KSP2 Version: $ksp2_version"
+        echo "ksp2_version=$ksp2_version" >> $GITHUB_ENV
+
     - name: Post mod update
       run:  ${{ github.action_path }}/post_mod_update.sh 
       shell: bash
@@ -63,3 +68,4 @@ runs:
         INPUT_POST_FOOTER: ${{ inputs.post_footer }}
         INPUT_CHANGELOG: ${{ inputs.changelog }}
         INPUT_VERSION: ${{ inputs.version }}
+        INPUT_KSP2_VERSION: ${{ env.ksp2_version }}
