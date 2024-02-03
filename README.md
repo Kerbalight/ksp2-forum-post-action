@@ -5,7 +5,7 @@ GitHub Action to post mod update on KSP2 Forum and update topic title
 
 ```
       - name: Update mod topic 
-        uses: Kerbalight/ksp2-forum-post-action@v1
+        uses: Kerbalight/ksp2-forum-post-action@latest
         with:
           username: ${{ secrets.KSP_FORUM_USERNAME }}
           password: ${{ secrets.KSP_FORUM_PASSWORD }}
