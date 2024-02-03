@@ -56,7 +56,9 @@ runs:
     - name: Install pup
       shell: bash
       run: |
-        sudo wget https://github.com/ericchiang/pup/releases/download/v0.4.0/pup_v0.4.0_linux_amd64.zip | sudo unzip pup_v0.4.0_linux_amd64.zip -d /usr/local/bin
+        sudo wget -O pup_linux.zip https://github.com/ericchiang/pup/releases/download/v0.4.0/pup_v0.4.0_linux_amd64.zip
+        sudo unzip pup_linux.zip -d "$PWD/pup"
+        echo "$PWD/pup" >> $GITHUB_PATH
 
     - name: Read KSP2 Version
       shell: bash
