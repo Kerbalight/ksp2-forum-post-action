@@ -51,6 +51,11 @@ fi
 pandoc -f markdown -t html './message.md' > message.html
 tr -d '\n' < message.html > messagestripped.html # \r\n on Windows
 
+echo $'\nMessage prepared, markdown:'
+cat message.md
+echo $'\nHTML:'
+cat message.html
+
 # message_escaped=$(echo "$message_html" | jq -sRr '@uri')
 # echo "HTML OK, Message:"
 # echo "$message_escaped"
@@ -72,7 +77,7 @@ title_response=$(curl -X POST -L \
 -A "$user_agent" -b ./cookies -c ./cookies "${forum_topic_url}")
 
 echo $'\nReply..' 
-reply_response=(curl -X POST -L \
+reply_response=$(curl -X POST -L \
 -F _contentReply=1 \
 -F MAX_FILE_SIZE=${maxfilesize_input} \
 -F plupload=${plupload_input} \
