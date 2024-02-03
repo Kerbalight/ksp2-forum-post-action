@@ -42,12 +42,17 @@ runs:
     - name: Add mask (again to be sure)
       run: echo "::add-mask::${{ inputs.password }}"
       shell: bash
-      
+
     - name: Install and cache dependencies
       uses: awalsh128/cache-apt-pkgs-action@latest
       with:
-        packages: pup jq pandoc
+        packages: jq pandoc
         version: 1.0
+
+    - name: Install pup
+      shell: bash
+      run: |
+        sudo wget https://github.com/ericchiang/pup/releases/download/v0.4.0/pup_v0.4.0_linux_amd64.zip | sudo unzip pup_v0.4.0_linux_amd64.zip -d /usr/local/bin
 
     - name: Read KSP2 Version
       shell: bash
