@@ -21,12 +21,16 @@ inputs:
     description: "The title of the forum topic to post in. Use {version} placeholder to insert the version number"
     required: true
     default: ""
-  spacedock_url:
-    description: "The Mod URL on spacedock. If provided, a link to the mod will be included in the post"
-    required: false
-    default: ""
+  post_title:
+    description: "The title of the forum post, in markdown. Use {version} placeholder to insert the version number"
+    required: true
+    default: "## Release v{version}"
   post_footer:
     description: "The fixed markdown footer to add to the post"
+    required: false
+    default: ""
+  spacedock_url:
+    description: "The Mod URL on spacedock. If provided, a link to the mod will be included in the post"
     required: false
     default: ""
   version:
@@ -76,6 +80,7 @@ runs:
         INPUT_FORUM_TOPIC_URL: ${{ inputs.forum_topic_url }}
         INPUT_SPACEDOCK_URL: ${{ inputs.spacedock_url }}
         INPUT_TOPIC_TITLE: ${{ inputs.forum_topic_title }}
+        INPUT_POST_TITLE: ${{ inputs.post_title }}
         INPUT_POST_FOOTER: ${{ inputs.post_footer }}
         INPUT_CHANGELOG: ${{ inputs.changelog }}
         INPUT_VERSION: ${{ inputs.version }}

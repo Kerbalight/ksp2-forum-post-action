@@ -37,7 +37,8 @@ fi
 # Message: add release title
 echo $'\nPrepare post message..'
 
-echo "## Release v${INPUT_VERSION}" > ./message.md
+post_title=$(echo "$INPUT_POST_TITLE" | sed -e "s/{version}/${INPUT_VERSION}/")
+echo "$post_title" > ./message.md
 cat "$changelog_file" >> ./message.md
 
 if [ -n "$INPUT_SPACEDOCK_URL" ]; then
