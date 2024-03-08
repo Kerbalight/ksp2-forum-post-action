@@ -13,8 +13,8 @@ if [ -z "$forum_topic_id" ]; then
 fi
 
 if [ ! -f "$changelog_file" ]; then
-    echo "$changelog_file does not exist. Exiting.."
-    exit 1
+  echo "$changelog_file does not exist. Exiting.."
+  exit 1
 fi
 
 
@@ -23,9 +23,11 @@ echo "Logging in.."
 user_agent="Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/81.0 KSP2ForumGithubAction/0.1"
 index_response=$(curl 'https://forum.kerbalspaceprogram.com/' -c ./cookies)
 csrf_token=$(echo "$index_response" | pup 'input[name="csrfKey"] attr{value}') 
+echo "$index_response" > ./index_response.html
 
 login_response=$(curl -X POST -L -d "auth=${INPUT_USERNAME}&password=${INPUT_PASSWORD}&csrfKey=${csrf_token}&_processLogin=usernamepassword" -A "$user_agent" -b ./cookies -c ./cookies 'https://forum.kerbalspaceprogram.com/login/')
 csrf_token=$(echo "$index_response" | pup 'input[name="csrfKey"] attr{value}') 
+echo "$login_response" > ./login_response.html
 
 logged_username=$(echo "$login_response" | pup 'a#elUserLink text{}' | tr -d ' ')
 echo "Logged in as: $logged_username"
@@ -42,7 +44,7 @@ echo "$post_title" > ./message.md
 cat "$changelog_file" >> ./message.md
 
 if [ -n "$INPUT_SPACEDOCK_URL" ]; then
-    echo -e "\n\n[Download on SpaceDock](${INPUT_SPACEDOCK_URL})" >> ./message.md
+  echo -e "\n\n[Download on SpaceDock](${INPUT_SPACEDOCK_URL})" >> ./message.md
 fi
 
 if [ -n "$INPUT_POST_FOOTER" ]; then
@@ -63,10 +65,12 @@ cat message.html
 
 echo $'\nGet forum topic..'
 latest_page_response=$(curl -L -A "$user_agent" -b ./cookies -c ./cookies "${forum_topic_url}pages/9999")
-
 csrf_token=$(echo "$latest_page_response" | pup 'div[data-role="replyArea"] input[name="csrfKey"] attr{value}')
 plupload_input=$(echo "$latest_page_response" | pup 'div[data-role="replyArea"] input[name="plupload"] attr{value}')
 maxfilesize_input=$(echo "$latest_page_response" | pup 'div[data-role="replyArea"] input[name="MAX_FILE_SIZE"] attr{value}')
+echo "$latest_page_response" > ./latest_page_response.html
+echo "plupload_input: $plupload_input"
+echo "maxfilesize_input: $maxfilesize_input"
 
 echo $'\nUpdate title..'
 new_title=$(echo "$INPUT_TOPIC_TITLE" | sed -e "s/{version}/${INPUT_VERSION}/" | sed -e "s/{ksp2_version}/${INPUT_KSP2_VERSION}/")
@@ -76,6 +80,7 @@ title_response=$(curl -X POST -L \
 --data-urlencode "csrfKey=${csrf_token}" \
 --data-urlencode "do=ajaxEditTitle" \
 -A "$user_agent" -b ./cookies -c ./cookies "${forum_topic_url}")
+echo "$title_response" > ./title_response.html
 
 echo $'\nReply..' 
 reply_response=$(curl -X POST -L \
@@ -88,6 +93,13 @@ reply_response=$(curl -X POST -L \
 -F "topic_comment_${forum_topic_id}=" \
 -F "topic_comment_${forum_topic_id}_noscript=<messagestripped.html" \
 -A "$user_agent" -b ./cookies -c ./cookies "$forum_topic_url")
+echo "$reply_response" > ./reply_response.html
+
+error_message=$(echo "$reply_response" | pup 'div.ipsType_warning[data-role="commentFormError"] text{}')
+if ! [[ -z "$error_message" ]]; then
+  echo "::error::(when posting to forum) $error_message"
+  exit 1
+fi
 
 rm ./cookies
 
