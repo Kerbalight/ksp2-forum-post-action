@@ -22,12 +22,16 @@ fi
 echo "Logging in.."
 user_agent="Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/81.0 KSP2ForumGithubAction/0.1"
 index_response=$(curl 'https://forum.kerbalspaceprogram.com/' -c ./cookies)
-csrf_token=$(echo "$index_response" | pup 'input[name="csrfKey"] attr{value}') 
-echo "$index_response" > ./index_response.html
+csrf_token=$(echo "$index_response" | pup 'input[name="csrfKey"] attr{value}')
+if [ "$INPUT_RESPONSE_DEBUG" = "true" ]; then
+  echo "$index_response" > ./index_response.html
+fi
 
 login_response=$(curl -X POST -L -d "auth=${INPUT_USERNAME}&password=${INPUT_PASSWORD}&csrfKey=${csrf_token}&_processLogin=usernamepassword" -A "$user_agent" -b ./cookies -c ./cookies 'https://forum.kerbalspaceprogram.com/login/')
-csrf_token=$(echo "$index_response" | pup 'input[name="csrfKey"] attr{value}') 
-echo "$login_response" > ./login_response.html
+csrf_token=$(echo "$index_response" | pup 'input[name="csrfKey"] attr{value}')
+if [ "$INPUT_RESPONSE_DEBUG" = "true" ]; then
+  echo "$login_response" > ./login_response.html
+fi
 
 logged_username=$(echo "$login_response" | pup 'a#elUserLink text{}' | tr -d ' ')
 echo "Logged in as: $logged_username"
@@ -68,7 +72,9 @@ latest_page_response=$(curl -L -A "$user_agent" -b ./cookies -c ./cookies "${for
 csrf_token=$(echo "$latest_page_response" | pup 'div[data-role="replyArea"] input[name="csrfKey"] attr{value}')
 plupload_input=$(echo "$latest_page_response" | pup 'div[data-role="replyArea"] input[name="plupload"] attr{value}')
 maxfilesize_input=$(echo "$latest_page_response" | pup 'div[data-role="replyArea"] input[name="MAX_FILE_SIZE"] attr{value}')
-echo "$latest_page_response" > ./latest_page_response.html
+if [ "$INPUT_RESPONSE_DEBUG" = "true" ]; then
+  echo "$latest_page_response" > ./latest_page_response.html
+fi
 echo "plupload_input: $plupload_input"
 echo "maxfilesize_input: $maxfilesize_input"
 
@@ -80,9 +86,11 @@ title_response=$(curl -X POST -L \
 --data-urlencode "csrfKey=${csrf_token}" \
 --data-urlencode "do=ajaxEditTitle" \
 -A "$user_agent" -b ./cookies -c ./cookies "${forum_topic_url}")
-echo "$title_response" > ./title_response.html
+if [ "$INPUT_RESPONSE_DEBUG" = "true" ]; then
+  echo "$title_response" > ./title_response.html
+fi
 
-echo $'\nReply..' 
+echo $'\nReply..'
 reply_response=$(curl -X POST -L \
 -F _contentReply=1 \
 -F MAX_FILE_SIZE=${maxfilesize_input} \
@@ -93,10 +101,12 @@ reply_response=$(curl -X POST -L \
 -F "topic_comment_${forum_topic_id}=" \
 -F "topic_comment_${forum_topic_id}_noscript=<messagestripped.html" \
 -A "$user_agent" -b ./cookies -c ./cookies "$forum_topic_url")
-echo "$reply_response" > ./reply_response.html
+if [ "$INPUT_RESPONSE_DEBUG" = "true" ]; then
+  echo "$reply_response" > ./reply_response.html
+fi
 
 error_message=$(echo "$reply_response" | pup 'div.ipsType_warning[data-role="commentFormError"] text{}')
-if ! [[ -z "$error_message" ]]; then
+if [[ -n "$error_message" ]]; then
   echo "::error::(when posting to forum) $error_message"
   exit 1
 fi

@@ -41,6 +41,10 @@ inputs:
     description: "The filename of your changelog"
     required: true
     default: ""
+  response_debug:
+    description: 'Enable debug output'
+    required: false
+    default: "false"
 branding:
   icon: 'upload'
   color: 'green'
@@ -86,3 +90,4 @@ runs:
         INPUT_VERSION: ${{ inputs.version }}
         INPUT_KSP2_VERSION: ${{ env.ksp2_version }}
         INPUT_SWINFO_PATH: ${{ inputs.swinfo_path }}
+        INPUT_RESPONSE_DEBUG: ${{ inputs.response_debug }}
